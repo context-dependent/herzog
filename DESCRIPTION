@@ -2,8 +2,8 @@ Package: herzog
 Type: Package
 Title: Get Tidy Results from Herzog Assessments
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: tmcmanus@blueprint-ade.ca
+Author: Thomas McManus
+Maintainer: Thomas McManus
 Description: Stop losing your ctrl-fing mind with herzog assessment results. 
     Pull clean and tidy data using nothing but your public assessment summary url.
 License: What license is it under?
