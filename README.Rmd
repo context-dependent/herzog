@@ -1,0 +1,44 @@
+---
+title: "Get Essential Skills Test Results"
+author: "Thomas McManus"
+date: "8/13/2019"
+output: md_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`herzog` is an R package designed to automatically scrape Herzog assessment results from the assessment_summary page for your organization. 
+
+## Get results
+
+`get_herzog_results` takes the assessment summary url and returns a data frame where each row is an assessment.
+
+```{r get-results}
+devtools::install_github("context-dependent/herzog")
+
+library(tidyverse)
+library(herzog)
+
+
+url <- "https://bpade.essentialskillsgroup.com/custom_reports/assessment_summary.php"
+
+herzog_results <- get_herzog_results(url)
+
+knitr::kable(head(herzog_results))
+```
+
+
+The returned table has 7 meaningful columns: 
+
+- `case_id`: unique identifier for the assessed participant
+- `skill`: skill tested. Currently the only skills returned are Document Use and Numeracy, though that will be made flexible in future versions. 
+- `test`: whether this is the first (Baseline) or second (Post) test completed by the participant for the skill
+- `duration_mins`: how long the test took the participant to complete, rounded to the nearest minute
+- `score`: the score achieved on the assessment
+- `level`: the category of aptitude associated with the `score`
+- `start_date`: the date and time at which the assessment was started
+
+
