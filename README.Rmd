@@ -27,7 +27,7 @@ url <- "https://bpade.essentialskillsgroup.com/custom_reports/assessment_summary
 
 herzog_results <- get_herzog_results(url)
 
-knitr::kable(head(herzog_results))
+knitr::kable(head(herzog_results), format = "markdown")
 ```
 
 
