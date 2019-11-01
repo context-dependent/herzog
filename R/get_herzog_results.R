@@ -54,6 +54,14 @@ get_herzog_results <- function(url, ids = NULL) {
 }
 
 
+#' filter herzog results for eligible pre-post cases
+#'
+#' @param herzog_results
+#'
+#' @return
+#' @export
+#'
+#' @examples
 filter_for_pre_post_cases <- function(herzog_results) {
 
   complete_cases <-
@@ -68,13 +76,21 @@ filter_for_pre_post_cases <- function(herzog_results) {
 
 }
 
+#' Calculate pre-post differences
+#'
+#' @param herzog_results
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calculate_differences <- function(herzog_results) {
 
   post_compared_to_baseline <-
 
     herzog_results %>%
 
-      filter_for_pre_post() %>%
+      filter_for_pre_post_cases() %>%
       arrange(test) %>%
       group_by(case_id, skill) %>%
       summarize_at(vars(duration_mins, level, score, start_date), list(~ last(.) - first(.)))
