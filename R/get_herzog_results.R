@@ -38,14 +38,16 @@ get_herzog_results <- function(url, ids = NULL) {
       dplyr::select(-var) %>%
       dplyr::group_by_all() %>%
       dplyr::slice(1) %>%
-      dplyr::filter(stat %in% c("Level", "Score", "Duration (mins)", "Start Date")) %>%
+      dplyr::filter(stat %in% c("Level", "Score", "Duration (mins)", "Start Date", "# Items", "# Correct")) %>%
       tidyr::spread(stat, val) %>%
       janitor::clean_names() %>%
       dplyr::mutate_at(
         vars(duration_mins, level, score),
         list(as.integer)
       ) %>%
-      dplyr::mutate(start_date = lubridate::as_datetime(start_date))
+      dplyr::mutate(start_date = lubridate::as_datetime(start_date)) %>%
+      dplyr::mutate(correct_responses = glue::glue("{number_correct} / {number_items}")) %>%
+      dplyr::select(-number_correct, -number_items)
 
   res <- dat_clean
 
@@ -96,6 +98,26 @@ calculate_differences <- function(herzog_results) {
       summarize_at(vars(duration_mins, level, score, start_date), list(~ last(.) - first(.)))
 
   res <- post_compared_to_baseline
+
+  res
+
+}
+
+#' Pivot results wide to printable format for communication with clients
+#'
+#' @param herzog_results
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pivot_to_print <- function(herzog_results) {
+
+  res <- herzog_results %>%
+
+    pivot_wider(names_from = c(skill, test), values_from = c(duration_mins, level, score, start_date, correct_responses)) %>%
+    select(esg_user_id, case_id, matches("Numeracy"), matches("Document Use")) %>% select(matches("Baseline"), matches("Post")) %>%
+    janitor::clean_names()
 
   res
 
