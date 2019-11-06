@@ -15,7 +15,7 @@ get_herzog_results <- function(url, ids = NULL) {
     rvest::html_table(header = TRUE) %>%
     purrr::pluck(1) %>%
     tibble::as_tibble() %>%
-    na_if("-")
+    dplyr::na_if("-")
 
   dat_long <-
 
@@ -69,8 +69,8 @@ filter_for_pre_post_cases <- function(herzog_results) {
   complete_cases <-
 
     herzog_results %>%
-      group_by(case_id, skill) %>%
-      filter("Baseline" %in% test, "Post" %in% test)
+      dplyr::group_by(case_id, skill) %>%
+      dplyr::filter("Baseline" %in% test, "Post" %in% test)
 
   res <- complete_cases
 
@@ -93,9 +93,9 @@ calculate_differences <- function(herzog_results) {
     herzog_results %>%
 
       filter_for_pre_post_cases() %>%
-      arrange(test) %>%
-      group_by(case_id, skill) %>%
-      summarize_at(vars(duration_mins, level, score, start_date), list(~ last(.) - first(.)))
+      dplyr::arrange(test) %>%
+      dplyr::group_by(case_id, skill) %>%
+      dplyr::summarize_at(vars(duration_mins, level, score, start_date), list(~ last(.) - first(.)))
 
   res <- post_compared_to_baseline
 
@@ -115,9 +115,10 @@ pivot_to_print <- function(herzog_results) {
 
   res <- herzog_results %>%
 
-    pivot_wider(names_from = c(skill, test), values_from = c(duration_mins, level, score, start_date, correct_responses)) %>%
-    select(esg_user_id, case_id, matches("Numeracy"), matches("Document Use")) %>% select(matches("Baseline"), matches("Post")) %>%
-    janitor::clean_names()
+    tidyr::pivot_wider(names_from = c(skill, test), values_from = c(duration_mins, level, score, start_date, correct_responses)) %>%
+    dplyr::select(esg_user_id, case_id, matches("Numeracy"), matches("Document Use")) %>% select(matches("Baseline"), matches("Post")) %>%
+    janitor::clean_names() %>%
+    dplyr::select(-matches("start_date|duration_mins"))
 
   res
 
